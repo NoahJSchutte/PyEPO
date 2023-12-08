@@ -65,6 +65,17 @@ class tspABModel(optGrbModel):
             optModel: new copied model
         """
         new_model = type(self)(self.num_nodes)
+        # copy params
+        for attr in dir(self._model.Params):
+            if not attr.startswith('_'):
+                try:
+                    # get value
+                    val = self._model.getParamInfo(attr)[2]
+                    # set value
+                    new_model._model.setParam(attr, val)
+                except gp.GurobiError:
+                    # ignore non-param
+                    pass
         return new_model
 
     def getTour(self, sol):

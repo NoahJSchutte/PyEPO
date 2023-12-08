@@ -72,6 +72,17 @@ class optGrbModel(optModel):
         # variables for new model
         x = new_model._model.getVars()
         new_model.x = {key: x[i] for i, key in enumerate(self.x)}
+        # copy params
+        for attr in dir(self._model.Params):
+            if not attr.startswith('_'):
+                try:
+                    # get value
+                    val = self._model.getParamInfo(attr)[2]
+                    # set value
+                    new_model._model.setParam(attr, val)
+                except gp.GurobiError:
+                    # ignore non-param
+                    pass
         return new_model
 
     def addConstr(self, coefs, rhs):
